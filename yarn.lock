@@ -3463,6 +3463,11 @@ expo-blur@~14.1.5:
   resolved "https://pkgs.dev.azure.com/bconline/ASG/_packaging/Embark/npm/registry/expo-blur/-/expo-blur-14.1.5.tgz#910712389e19286ccdc136275bf569f427aa05ef"
   integrity sha1-kQcSOJ4ZKGzNwTYnW/Vp9CeqBe8=
 
+expo-checkbox@~4.1.4:
+  version "4.1.4"
+  resolved "https://pkgs.dev.azure.com/bconline/ASG/_packaging/Embark/npm/registry/expo-checkbox/-/expo-checkbox-4.1.4.tgz#ad5de0d346af26027c939f943d87ac4c68283d00"
+  integrity sha1-rV3g00avJgJ8k5+UPYesTGgoPQA=
+
 expo-constants@~17.1.5, expo-constants@~17.1.6:
   version "17.1.6"
   resolved "https://pkgs.dev.azure.com/bconline/ASG/_packaging/Embark/npm/registry/expo-constants/-/expo-constants-17.1.6.tgz#a31b019216f7f7bb4907aeffa2d6bf856751985e"

@@ -1,18 +1,26 @@
-import { Platform, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import Checkbox from 'expo-checkbox';
+import { Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { matchFont } from "@shopify/react-native-skia";
 import { Image } from 'expo-image';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CartesianChart, Line, useChartTransformState } from "victory-native";
 
 
+const initialXscale = 10;
+const initialYscale = 1;
 export default function Index() {
 
   const [myData, setMyData] = useState<any[]>([]);
+  const [domain, setDomain] = useState({ x: [1546387200, 1546387200], y: [90, 150] });
+
+  const resetDomain = () => {
+    setDomain({ x: [1546387200, 1546387200], y: [90, 150] });
+  }
 
   const transformState = useChartTransformState({
-    scaleX: 10, // Initial X-axis scale
-    scaleY: 1, // Initial Y-axis scale
+    scaleX: initialXscale, // Initial X-axis scale
+    scaleY: initialYscale, // Initial Y-axis scale
   });
 
   const fontFamily = Platform.select({ ios: "Helvetica", default: "serif" });
@@ -34,6 +42,23 @@ export default function Index() {
         console.error(error);
       });
   }, []);
+
+  const [isOpenChecked, setOpenChecked] = useState(true);
+  const [isCloseChecked, setCloseChecked] = useState(true);
+  const [isLowChecked, setLowChecked] = useState(true);
+  const [isHighChecked, setHighChecked] = useState(true);
+
+  const drawLines = useCallback((points) => {
+    return (
+            <>
+              {isOpenChecked && <Line points={points.open} color="red" strokeWidth={0.2} />}
+              {isCloseChecked && <Line points={points.high} color="blue" strokeWidth={0.2} />}
+              {isLowChecked && <Line points={points.low} color="yellow" strokeWidth={0.2} />}
+              {isHighChecked && <Line points={points.close} color="green" strokeWidth={0.2} />}
+            </>
+        )
+  }, [isOpenChecked, isCloseChecked, isLowChecked, isHighChecked]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.titleContainer}>
@@ -46,6 +71,7 @@ export default function Index() {
           xKey="timestamp"
           yKeys={["open", "high", "low", "close"]}
           transformState={transformState.state}
+          domain={domain}
           axisOptions={{
             font,
             formatXLabel: x => {
@@ -63,15 +89,32 @@ export default function Index() {
             },
           }}
           >
-          {({ points }) => (
-            <>
-              <Line points={points.open} color="red" strokeWidth={0.2} />
-              <Line points={points.high} color="blue" strokeWidth={0.2} />
-              <Line points={points.low} color="yellow" strokeWidth={0.2} />
-              <Line points={points.close} color="green" strokeWidth={0.2} />
-            </>
-        )}
+          {({ points }) => drawLines(points)}
         </CartesianChart>
+      </View>
+      <View style={styles.commandContainer}>
+        <View style={{ flexDirection: 'column'}}>
+          <Text>Display</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+            <Checkbox style={styles.checkbox} value={isOpenChecked} onValueChange={() => setOpenChecked(!isOpenChecked)} />
+            <Text>Open</Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+            <Checkbox style={styles.checkbox} value={isCloseChecked} onValueChange={() => setCloseChecked(!isCloseChecked)} />
+            <Text>Close</Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+            <Checkbox style={styles.checkbox} value={isLowChecked} onValueChange={() => setLowChecked(!isLowChecked)} />
+            <Text>Low</Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+            <Checkbox style={styles.checkbox} value={isHighChecked} onValueChange={() => setHighChecked(!isHighChecked)} />
+            <Text>Low</Text>
+          </View>
+        </View>
+        <TouchableOpacity onPress={resetDomain} style={{ padding: 8, backgroundColor: '#DEE1E6', borderRadius: 8 }}>
+          <Text>Reset Zoom</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -95,18 +138,24 @@ const styles = StyleSheet.create({
   },
   chartContainer: {
     height: 300,
+    backgroundColor: '#DEE1E6',
     padding: 16,
     marginHorizontal: 16,
     marginTop: 100, // 16,
-    backgroundColor: '#DEE1E6',
     borderRadius: 10,
+  },
+  commandContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    padding: 16,
   },
   titleText: {
     fontSize: 32,
     fontWeight: '400',
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  checkbox: {
+    margin: 8,
   },
 });
