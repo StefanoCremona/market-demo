@@ -48,6 +48,19 @@ export default function Index() {
           transformState={transformState.state}
           axisOptions={{
             font,
+            formatXLabel: x => {
+              try {
+                const date = new Date(Number(x));
+                return date.toLocaleDateString("en-GB");
+              } catch (error) {
+                console.error('Error formatting date:', error);
+                return x; // Fallback in case of error
+              }
+            },
+            formatYLabel: y => {
+              // console.log('Y: ', y);
+              return `$${y}`
+            },
           }}
           >
           {({ points }) => (
