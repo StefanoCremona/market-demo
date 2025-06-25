@@ -3,7 +3,7 @@ import { Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from
 
 import { matchFont } from "@shopify/react-native-skia";
 import { Image } from 'expo-image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CartesianChart, Line, useChartTransformState } from "victory-native";
 
 
@@ -12,10 +12,10 @@ const initialYscale = 1;
 export default function Index() {
 
   const [myData, setMyData] = useState<any[]>([]);
-  const [domain, setDomain] = useState({ x: [1546387200, 1546387200], y: [90, 150] });
+  const [domain, setDomain] = useState({ x: [1546387200, 1546387200], y: [100, 150] });
 
   const resetDomain = () => {
-    setDomain({ x: [1546387200, 1546387200], y: [90, 150] });
+    setDomain({ x: [1546387200, 1546387200], y: [100, 150] });
   }
 
   const transformState = useChartTransformState({
@@ -59,6 +59,18 @@ export default function Index() {
         )
   }, [isOpenChecked, isCloseChecked, isLowChecked, isHighChecked]);
 
+
+  const header = useMemo(() => {
+    return (
+            <View style={styles.header}>
+              {isOpenChecked && <View style={styles.headerKeyContainer}><View style={[styles.openKeyContainer]} /><Text>Open</Text></View>}
+              {isCloseChecked && <View style={styles.headerKeyContainer}><View style={[styles.closeKeyContainer]} /><Text>Close</Text></View>}
+              {isLowChecked && <View style={styles.headerKeyContainer}><View style={[styles.lowKeyContainer]} /><Text>Low</Text></View>}
+              {isHighChecked && <View style={styles.headerKeyContainer}><View style={[styles.highKeyContainer]} /><Text>High</Text></View>}
+            </View>
+        )
+  }, [isOpenChecked, isCloseChecked, isLowChecked, isHighChecked]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.titleContainer}>
@@ -66,6 +78,7 @@ export default function Index() {
         <Text style={styles.titleText}>AAPL Market Data</Text>
       </View>
       <View style={styles.chartContainer}>
+        {header}
         <CartesianChart
           data={myData}
           xKey="timestamp"
@@ -92,7 +105,7 @@ export default function Index() {
           {({ points }) => drawLines(points)}
         </CartesianChart>
       </View>
-      <View style={styles.commandContainer}>
+      <View style={styles.commandsContainer}>
         <View style={{ flexDirection: 'column'}}>
           <Text>Display</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center'}}>
@@ -112,8 +125,8 @@ export default function Index() {
             <Text>Low</Text>
           </View>
         </View>
-        <TouchableOpacity onPress={resetDomain} style={{ padding: 8, backgroundColor: '#DEE1E6', borderRadius: 8 }}>
-          <Text>Reset Zoom</Text>
+        <TouchableOpacity onPress={resetDomain} style={styles.resetButton}>
+          <Text style={{color: 'white'}}>Reset Zoom</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -125,6 +138,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    marginBottom: 16,
+  },
+  headerKeyContainer: {flexDirection: 'row', alignItems: "center", justifyContent: "center"},
+  openKeyContainer: {height: 12, width: 12, borderRadius: 12, backgroundColor: 'red', marginRight: 4},
+  closeKeyContainer: {height: 12, width: 12, borderRadius: 12, backgroundColor: 'blue', marginRight: 4},
+  lowKeyContainer: {height: 12, width: 12, borderRadius: 12, backgroundColor: 'yellow', marginRight: 4},
+  highKeyContainer: {height: 12, width: 12, borderRadius: 12, backgroundColor: 'green', marginRight: 4},
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -141,10 +165,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#DEE1E6',
     padding: 16,
     marginHorizontal: 16,
-    marginTop: 100, // 16,
+    marginTop: 28,
     borderRadius: 10,
   },
-  commandContainer: {
+  commandsContainer: {
     width: '100%',
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -158,4 +182,5 @@ const styles = StyleSheet.create({
   checkbox: {
     margin: 8,
   },
+  resetButton: { padding: 8, backgroundColor: 'black', borderRadius: 16 }
 });
