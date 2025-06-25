@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
+import { Image } from 'expo-image';
 import { useMemo } from 'react';
 import { CartesianChart, Line } from "victory-native";
 
@@ -9,10 +10,14 @@ export default function Index() {
       day: i,
       highTmp: 40 + 30 * Math.random(),
     })), []);
+
   return (
-    <View style={styles.titleContainer}>
-      <Text>Welcome to my Page!</Text>
-      <View style={{ height: 300, width: '100%' }}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.titleContainer}>
+        <Image source={require('@/assets/images/appleIcon.png')} style={styles.imageStyle} />
+        <Text style={styles.titleText}>AAPL Market Data</Text>
+      </View>
+      <View style={styles.chartContainer}>
         <CartesianChart data={DATA} xKey="day" yKeys={["highTmp"]}>
           {({ points }) => (
           // 👇 and we'll use the Line component to render a line path.
@@ -20,25 +25,40 @@ export default function Index() {
         )}
         </CartesianChart>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
   titleContainer: {
-    flexDirection: 'column',
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'center',
+  },
+  imageStyle: {
+    height: 47,
+    width: 51,
+    marginRight: 8,
+    borderRadius: 8,
+  },
+  chartContainer: {
+    height: 300,
+    padding: 16,
+    marginHorizontal: 16,
+    marginTop: 16,
+    backgroundColor: '#DEE1E6',
+    borderRadius: 10,
+  },
+  titleText: {
+    fontSize: 32,
+    fontWeight: '400',
   },
   stepContainer: {
     gap: 8,
     marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
   },
 });
