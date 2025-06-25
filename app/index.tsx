@@ -1,24 +1,33 @@
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Platform, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
+import { matchFont } from "@shopify/react-native-skia";
 import { Image } from 'expo-image';
-import { useEffect, useMemo, useState } from 'react';
-import { CartesianChart, Line } from "victory-native";
+import { useEffect, useState } from 'react';
+import { CartesianChart, Line, useChartTransformState } from "victory-native";
+
 
 export default function Index() {
 
   const [myData, setMyData] = useState<any[]>([]);
 
-  const DATA = useMemo(() => 
-      Array.from({ length: 31 }, (_, i) => ({
-      day: i,
-      highTmp: 40 + 30 * Math.random(),
-    })), []);
+  const transformState = useChartTransformState({
+    scaleX: 10, // Initial X-axis scale
+    scaleY: 1, // Initial Y-axis scale
+  });
+
+  const fontFamily = Platform.select({ ios: "Helvetica", default: "serif" });
+  const fontStyle = {
+    fontFamily,
+    fontSize: 14,
+    fontStyle: "italic",
+    fontWeight: "bold",
+  };
+  const font = matchFont(fontStyle);
 
   useEffect(() => {
     fetch('https://mock.apidog.com/m1/892843-874692-default/marketdata/history/AAPL')
       .then(response => response.json())
       .then(response => {
-        console.log('Got response:', response.data[0]);
         setMyData(response.data);
       })
       .catch(error => {
@@ -32,10 +41,21 @@ export default function Index() {
         <Text style={styles.titleText}>AAPL Market Data</Text>
       </View>
       <View style={styles.chartContainer}>
-        <CartesianChart data={myData} xKey="timestamp" yKeys={["open", "high", "low", "close"]}>
+        <CartesianChart
+          data={myData}
+          xKey="timestamp"
+          yKeys={["open", "high", "low", "close"]}
+          transformState={transformState.state}
+          axisOptions={{
+            font,
+          }}
+          >
           {({ points }) => (
             <>
-              <Line points={points.open} color="red" strokeWidth={3} />
+              <Line points={points.open} color="red" strokeWidth={0.2} />
+              <Line points={points.high} color="blue" strokeWidth={0.2} />
+              <Line points={points.low} color="yellow" strokeWidth={0.2} />
+              <Line points={points.close} color="green" strokeWidth={0.2} />
             </>
         )}
         </CartesianChart>
@@ -64,7 +84,7 @@ const styles = StyleSheet.create({
     height: 300,
     padding: 16,
     marginHorizontal: 16,
-    marginTop: 16,
+    marginTop: 100, // 16,
     backgroundColor: '#DEE1E6',
     borderRadius: 10,
   },
